@@ -7,6 +7,15 @@ pluginManagement {
 
 rootProject.name = 'dependency-analyzer'
 
-include 'dependency-analyzer',
-        'core',
-        'test-app'
+include 'core',
+        'test-app',
+        'test-app:subsubproject',
+        'test-library'
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            library('commons-lang3', 'org.apache.commons:commons-lang3:3.12.0')
+        }
+    }
+}

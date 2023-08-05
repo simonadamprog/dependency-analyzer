@@ -3,20 +3,20 @@
  */
 package hu.web220.dependency.analyzer.core;
 
-import hu.web220.dependency.analyzer.core.tasks.PrintTask;
+import hu.web220.dependency.analyzer.core.tasks.LibraryConnectionsSearchTask;
+import hu.web220.dependency.analyzer.core.tasks.DependencyTreePrintingTask;
 import org.gradle.api.Project;
 import org.gradle.api.Plugin;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ConfigurationContainer;
-import org.gradle.api.artifacts.Dependency;
-import org.gradle.api.artifacts.DependencySet;
 
 /**
  * A simple 'hello world' plugin.
  */
 public class DependencyAnalyzerPlugin implements Plugin<Project> {
+
+    public static final String TASK_GROUP = "dependency-analyzer";
+
     public void apply(Project project) {
-        // Register a task
-        project.getTasks().register("printAllDependencies", PrintTask.class);
+        project.getTasks().register("printDependencyTree", DependencyTreePrintingTask.class);
+        project.getTasks().register("searchLibraryConnections", LibraryConnectionsSearchTask.class);
     }
 }

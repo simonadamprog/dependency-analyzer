@@ -1,25 +1,34 @@
 package hu.web220.dependency.analyzer.core.tasks;
 
+import hu.web220.dependency.analyzer.core.DependencyAnalyzerPlugin;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.*;
-import org.gradle.api.artifacts.component.ComponentIdentifier;
-import org.gradle.api.artifacts.result.ArtifactResolutionResult;
-import org.gradle.api.component.Component;
 import org.gradle.api.tasks.TaskAction;
-import org.gradle.jvm.JvmLibrary;
-import org.gradle.language.base.artifact.SourcesArtifact;
-import org.gradle.language.java.artifact.JavadocArtifact;
-import org.gradle.maven.MavenPomArtifact;
-import org.gradle.platform.base.Library;
 
 import java.util.Set;
 
-public abstract class PrintTask extends DefaultTask {
+public abstract class DependencyTreePrintingTask extends DefaultTask {
+
+    public DependencyTreePrintingTask() {
+        setGroup(DependencyAnalyzerPlugin.TASK_GROUP);
+    }
 
     @TaskAction
     public void perform() {
         System.out.println("Hello from plugin 'hu.web220.dependency.analyzer'");
-        ConfigurationContainer configurations = getProject().getConfigurations();
+        iterateConfigurations(getProject().getRootProject());
+        getProject().getRootProject().getSubprojects().forEach(this::iterateConfigurations);
+    }
+
+    private void iterateConfigurations(Project project) {
+        System.out.printf("--- Project is: %s:%s:%s. DisplayName: %s%n",
+                project.getGroup(),
+                project.getName(),
+                project.getVersion(),
+                project.getDisplayName()
+                );
+        ConfigurationContainer configurations = project.getConfigurations();
         configurations.forEach(this::printConfiguration);
     }
 
@@ -30,7 +39,7 @@ public abstract class PrintTask extends DefaultTask {
             return;
         }
         Set<ResolvedDependency> level1 = configuration.getResolvedConfiguration().getFirstLevelModuleDependencies();
-        level1.forEach(resolvedDependency -> printDependency(resolvedDependency, 1));
+        level1.forEach(resolvedDependency -> printDependency(resolvedDependency, 1 ));
     }
 
     private void printDependency(ResolvedDependency dependency, int level) {
@@ -38,6 +47,7 @@ public abstract class PrintTask extends DefaultTask {
         for (int i = 0; i < level; i++) {
             stringBuilder.append(" ");
         }
+
         stringBuilder.append(dependency.getName());
         System.out.println(stringBuilder);
 

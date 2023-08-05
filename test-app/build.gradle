@@ -2,9 +2,13 @@ plugins {
     id 'java'
     id 'application'
     id 'org.springframework.boot' version '2.7.6'
-    id 'hu.web220.dependency.analyzer.core' version '0.1.0'
 }
 
+group = rootProject.group + '.test.app'
+version = rootProject.version
+
 dependencies {
+    implementation project(':test-library')
+    implementation project(':test-app:subsubproject')
     implementation 'org.springframework.boot:spring-boot-starter:2.7.6'
 }
