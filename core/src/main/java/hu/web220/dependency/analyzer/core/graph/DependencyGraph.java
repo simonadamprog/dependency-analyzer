@@ -1,85 +1,118 @@
 package hu.web220.dependency.analyzer.core.graph;
 
+import java.util.Map;
 import java.util.TreeMap;
 
 public class DependencyGraph {
 
-    private final TreeMap<String, DependencyNode> searchableDependencyMap;
+    private final Map<String, DependencyNode> dependencyMap;
 
-    private int printCounter;
+    private int printListCounter;
 
     private int creationCounter = 0;
 
     private int connectionCounter = 0;
 
+    private ProjectNode projectNodeToPrint = null;
+
     private DependencyGraph() {
-        searchableDependencyMap = new TreeMap<>();
+        dependencyMap = new TreeMap<>();
     }
 
-    public void createProjectDependency(String combinedId, String displayName) {
-        if (containsDependency(combinedId)) {
-            return;
-        }
+    public void createProjectDependencyIfNotExists(String combinedId, String displayName) {
+        if (notContainsDependency(combinedId)) {
+            createProjectDependency(combinedId, displayName);
 
+        }
+    }
+
+    private void createProjectDependency(String combinedId, String displayName) {
         NodeBuilder.create()
-                .map(searchableDependencyMap)
+                .map(dependencyMap)
                 .combinedId(combinedId)
                 .projectName(displayName)
                 .build();
+    }
 
+    private void increaseCreationCounter() {
         creationCounter++;
     }
 
-    private boolean containsDependency(String combinedId) {
-        return searchableDependencyMap.containsKey(combinedId);
+    private boolean notContainsDependency(String combinedId) {
+        return !dependencyMap.containsKey(combinedId);
     }
 
     public void createLibraryDependency(String combinedId) {
-        if (containsDependency(combinedId)) {
+        if (notContainsDependency(combinedId)) {
             return;
         }
 
         NodeBuilder.create()
-                .map(searchableDependencyMap)
+                .map(dependencyMap)
                 .combinedId(combinedId)
                 .build();
 
         creationCounter++;
     }
-    public void establishConnection(String parentCombinedId, String childCombinedId) {
-        DependencyNode parent = searchableDependencyMap.get(parentCombinedId);
-        DependencyNode child = searchableDependencyMap.get(childCombinedId);
 
-        if (child.containsParentDependency(parent)) {
-            return;
-        }
+    Map<String, DependencyNode> getDependencyMap() {
+        return dependencyMap;
+    }
 
-        parent.addChildDependency(child);
-        child.addParentDependency(parent);
-
+    void increaseConnectionCounter() {
         connectionCounter++;
     }
 
-    public void printData() {
+    public void printStatistics() {
         System.out.printf(
-                "There are %d creations and %d connections%n",
+                "Statistics: There are %d nodes and %d connections created in dependency graph.%n",
                 creationCounter,
                 connectionCounter);
     }
 
-    public void printList() {
-        printCounter = 1;
-        searchableDependencyMap.forEach((key, value) -> {
-            String displayName = "";
-            if (value instanceof ProjectNode) {
-                displayName = ((ProjectNode) value).getDisplayName();
-            }
-            System.out.printf(
-                    "%d. %s :: %s%n",
-                    printCounter++,
-                    displayName,
-                    key);
-        });
+    public void printDependencyListInAscendingOrder() {
+        restartPrintListCounter();
+        loopThroughDependenciesToPrint();
+    }
+
+    private void restartPrintListCounter() {
+        printListCounter = 1;
+    }
+
+    private void loopThroughDependenciesToPrint() {
+        dependencyMap.forEach(this::printNodeBasedOnNodeType);
+    }
+
+    private void printNodeBasedOnNodeType(String combinedId, DependencyNode node) {
+        getProjectNodeIfValid(node);
+        if (isProjectNode()) {
+            printProjectNode(combinedId);
+        }
+        else {
+            printLibraryNode(combinedId);
+        }
+    }
+
+    private void getProjectNodeIfValid(DependencyNode node) {
+        projectNodeToPrint = node instanceof ProjectNode
+                ? (ProjectNode) node : null;
+    }
+
+    private boolean isProjectNode() {
+        return projectNodeToPrint != null;
+    }
+
+    private void printProjectNode(String combinedId) {
+        System.out.printf("%d. %s (%s)%n",
+                printListCounter++,
+                projectNodeToPrint.getDisplayName(),
+                combinedId);
+    }
+
+    private void printLibraryNode(String combinedId) {
+        System.out.printf("%d. %s%n",
+                printListCounter++,
+                combinedId);
     }
 
     public static DependencyGraph create() {

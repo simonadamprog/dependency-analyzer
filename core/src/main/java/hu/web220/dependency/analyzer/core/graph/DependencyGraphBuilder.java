@@ -2,6 +2,7 @@ package hu.web220.dependency.analyzer.core.graph;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.artifacts.ResolvedDependency;
 
 public class DependencyGraphBuilder {
@@ -34,7 +35,7 @@ public class DependencyGraphBuilder {
     }
 
     private void addProjectToDependencyGraph(Project project) {
-        dependencyGraph.createProjectDependency(
+        dependencyGraph.createProjectDependencyIfNotExists(
                 getProjectCombinedId(project),
                 project.getDisplayName());
     }
@@ -58,38 +59,58 @@ public class DependencyGraphBuilder {
     }
 
     private void addLibrariesForProjectAndSetConnections(Project project) {
-        currentProject = project;
+        storeAsCurrentProject(project);
         loopThroughConfigurations();
+    }
+
+    private void storeAsCurrentProject(Project project) {
+        currentProject = project;
     }
 
     private void loopThroughConfigurations() {
         currentProject.getConfigurations()
-                .forEach(this::processResolvedLibrariesOfConfiguration);
+                .forEach(this::processLibrariesIfConfigurationResolvable);
     }
 
-    private void processResolvedLibrariesOfConfiguration(Configuration configuration) {
-        if (!configuration.isCanBeResolved()) {
-            return;
+    private void processLibrariesIfConfigurationResolvable(Configuration configuration) {
+        if (configuration.isCanBeResolved()) {
+            processLibrariesRecursivelyOfResolvedConfiguration(
+                    configuration.getResolvedConfiguration());
         }
-        configuration.getResolvedConfiguration()
+    }
+
+    private void processLibrariesRecursivelyOfResolvedConfiguration(ResolvedConfiguration configuration) {
+        configuration
                 .getFirstLevelModuleDependencies()
                 .forEach(dependency ->
                         addDependency(
-                                dependency,
-                                getProjectCombinedId(currentProject)));
+                                getProjectCombinedId(currentProject),
+                                dependency));
     }
 
-    private void addDependency(ResolvedDependency dependency, String parentId) {
-        dependencyGraph.createLibraryDependency(dependency.getName());
-        dependencyGraph.establishConnection(parentId, dependency.getName());
+    private void addDependency(String parentId, ResolvedDependency dependency) {
+        createDependencyNode(dependency.getName());
+        establishConnection(parentId, dependency.getName());
         loopThroughChildDependencies(dependency);
+    }
+
+    private void createDependencyNode(String combinedId) {
+        dependencyGraph.createLibraryDependency(combinedId);
+    }
+
+    private void establishConnection(String parentId, String childId) {
+        ConnectionBuilder.create()
+                .dependencyGraph(dependencyGraph)
+                .parentCombinedId(parentId)
+                .childCombinedId(childId)
+                .build();
     }
 
     private void loopThroughChildDependencies(ResolvedDependency dependency) {
         dependency.getChildren().forEach(child ->
                 addDependency(
-                        child,
-                        dependency.getName()));
+                        dependency.getName(),
+                        child));
     }
 
     private void loopThroughSubprojects() {

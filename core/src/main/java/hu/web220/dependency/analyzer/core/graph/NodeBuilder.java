@@ -9,6 +9,7 @@ class NodeBuilder {
     private Map<String, DependencyNode> map;
     private String combinedId;
     private String projectName;
+    private DependencyNode createdNode;
 
     public static NodeBuilder create() {
         return new NodeBuilder();
@@ -33,15 +34,33 @@ class NodeBuilder {
         return this;
     }
 
-    public DependencyNode build() {
-        DependencyNode node;
-        if (StringUtils.isNotBlank(projectName)) {
-            node = ProjectNode.create(combinedId, projectName);
+    public void build() {
+        createNodeBasedOnType();
+        addToMap();
+    }
+
+    private void createNodeBasedOnType() {
+        if (isProject()) {
+            createProjectNode();
         }
         else {
-            node = DependencyNode.create(combinedId);
+            createLibraryNode();
         }
-        map.put(combinedId, node);
-        return node;
+    }
+
+    private boolean isProject() {
+        return StringUtils.isNotBlank(projectName);
+    }
+
+    private void createProjectNode() {
+        createdNode = ProjectNode.create(combinedId, projectName);
+    }
+
+    private void createLibraryNode() {
+        createdNode = DependencyNode.create(combinedId);
+    }
+
+    private void addToMap() {
+        map.put(combinedId, createdNode);
     }
 }

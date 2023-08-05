@@ -46,7 +46,7 @@ public abstract class LibraryConnectionsSearchTask extends DefaultTask {
     }
 
     private void printDependencyGraphDetails() {
-        dependencyGraph.printData();
-        dependencyGraph.printList();
+        dependencyGraph.printStatistics();
+        dependencyGraph.printDependencyListInAscendingOrder();
     }
 }
