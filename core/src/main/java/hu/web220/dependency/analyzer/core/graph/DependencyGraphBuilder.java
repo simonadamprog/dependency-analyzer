@@ -95,7 +95,7 @@ public class DependencyGraphBuilder {
     }
 
     private void createDependencyNode(String combinedId) {
-        dependencyGraph.createLibraryDependency(combinedId);
+        dependencyGraph.createLibraryDependencyIfNotExists(combinedId);
     }
 
     private void establishConnection(String parentId, String childId) {

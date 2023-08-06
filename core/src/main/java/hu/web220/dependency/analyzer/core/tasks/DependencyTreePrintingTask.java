@@ -45,7 +45,7 @@ public abstract class DependencyTreePrintingTask extends DefaultTask {
     private void printDependency(ResolvedDependency dependency, int level) {
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0; i < level; i++) {
-            stringBuilder.append(" ");
+            stringBuilder.append("    ");
         }
 
         stringBuilder.append(dependency.getName());

@@ -22,7 +22,7 @@ public class DependencyGraph {
     public void createProjectDependencyIfNotExists(String combinedId, String displayName) {
         if (notContainsDependency(combinedId)) {
             createProjectDependency(combinedId, displayName);
-
+            increaseCreationCounter();
         }
     }
 
@@ -42,17 +42,18 @@ public class DependencyGraph {
         return !dependencyMap.containsKey(combinedId);
     }
 
-    public void createLibraryDependency(String combinedId) {
+    public void createLibraryDependencyIfNotExists(String combinedId) {
         if (notContainsDependency(combinedId)) {
-            return;
+            createLibraryDependency(combinedId);
+            increaseCreationCounter();
         }
+    }
 
+    private void createLibraryDependency(String combinedId) {
         NodeBuilder.create()
                 .map(dependencyMap)
                 .combinedId(combinedId)
                 .build();
-
-        creationCounter++;
     }
 
     Map<String, DependencyNode> getDependencyMap() {
