@@ -1,7 +1,7 @@
 package hu.web220.dependency.analyzer.core.graph;
 
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class DependencyGraph {
 
@@ -38,8 +38,23 @@ public class DependencyGraph {
         creationCounter++;
     }
 
-    private boolean notContainsDependency(String combinedId) {
-        return !dependencyMap.containsKey(combinedId);
+    public boolean containsDependency(String combinedId) {
+        return dependencyMap.containsKey(combinedId);
+    }
+
+    public boolean notContainsDependency(String combinedId) {
+        return !containsDependency(combinedId);
+    }
+
+    public boolean containsConnection(String parentId, String childId) {
+        return containsDependency(parentId)
+                && containsDependency(childId)
+                && dependencyMap.get(childId)
+                        .containsParentDependency(dependencyMap.get(parentId));
+    }
+
+    public boolean notContainsConnection(String parentID, String childId) {
+        return !containsConnection(parentID, childId);
     }
 
     public void createLibraryDependencyIfNotExists(String combinedId) {
@@ -114,6 +129,41 @@ public class DependencyGraph {
         System.out.printf("%d. %s%n",
                 printListCounter++,
                 combinedId);
+    }
+
+    public List<String> getRootLibraryIds(String libraryId) {
+        if (notContainsDependency(libraryId)) {
+            return Collections.emptyList();
+        }
+        DependencyNode node = dependencyMap.get(libraryId);
+        List<String> list = getRootLibrariesRecursively(node);
+        Collections.sort(list);
+        return list;
+    }
+
+    private List<String> getRootLibrariesRecursively(DependencyNode node) {
+        if (node instanceof ProjectNode) {
+            return Collections.emptyList();
+        }
+        List<String> rootLibraryIds = new ArrayList<>();
+        node.parentDependencies.forEach(parent ->
+            rootLibraryIds.addAll(getRootLibrariesRecursively(parent)));
+        if (rootLibraryIds.isEmpty()) {
+            rootLibraryIds.add(node.combinedId);
+        }
+        return rootLibraryIds;
+    }
+
+    public List<String> getProjectParents(String libraryId) {
+        if (notContainsDependency(libraryId)) {
+            return Collections.emptyList();
+        }
+        DependencyNode node = dependencyMap.get(libraryId);
+        return node.parentDependencies.stream()
+                .filter(parent -> parent instanceof ProjectNode)
+                .map(parent -> ((ProjectNode) parent).getDisplayName())
+                .sorted()
+                .collect(Collectors.toList());
     }
 
     public static DependencyGraph create() {

@@ -10,7 +10,9 @@ rootProject.name = 'dependency-analyzer'
 include 'core',
         'test-app',
         'test-app:subsubproject',
-        'test-library'
+        'test-library',
+        'circular-test-left',
+        'circular-test-right'
 
 dependencyResolutionManagement {
     versionCatalogs {

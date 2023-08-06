@@ -1,5 +1,7 @@
 package hu.web220.dependency.analyzer.test.app;
 
+import hu.web220.dependency.analyzer.circular.test.left.LeftUser;
+import hu.web220.dependency.analyzer.circular.test.right.RightUser;
 import hu.web220.dependency.analyzer.test.library.MyMath;
 import hu.web220.dependency.analyzer.test.subsubproject.SubSubProjectUtil;
 import org.springframework.context.annotation.Configuration;
@@ -12,6 +14,8 @@ public class Config {
     public void postConstruct() {
         calculate();
         printTest();
+        LeftUser.use();
+        RightUser.use();
     }
 
     private void calculate() {

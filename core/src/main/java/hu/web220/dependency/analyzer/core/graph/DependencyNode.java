@@ -17,6 +17,10 @@ class DependencyNode {
         this.childDependencies = new HashSet<>();
     }
 
+    public String getCombinedId() {
+        return combinedId;
+    }
+
     public boolean containsParentDependency(DependencyNode parentDependencyCandidate) {
         return this.parentDependencies.contains(parentDependencyCandidate);
     }

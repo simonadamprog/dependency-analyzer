@@ -1,4 +1,4 @@
-package hu.web220.dependency.analyzer.core.utils;
+package hu.web220.dependency.analyzer.core.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.gradle.api.Project;
@@ -25,7 +25,7 @@ public class LibraryIdBuilder {
         String param = project.getProperties()
                 .get(PARAMETER_LIBRARY).toString();
         String libraryId = StringUtils.abbreviate(param, 200);
-        System.out.println("Given input trimmed to 200 character length is: " + libraryId);
+        System.out.println("Given input (trimmed to 200 character length) is: " + libraryId);
         return libraryId;
     }
 

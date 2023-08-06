@@ -15,9 +15,7 @@ class NodeBuilder {
         return new NodeBuilder();
     }
 
-    private NodeBuilder() {
-
-    }
+    private NodeBuilder() {}
 
     public NodeBuilder map(Map<String, DependencyNode> map) {
         this.map = map;

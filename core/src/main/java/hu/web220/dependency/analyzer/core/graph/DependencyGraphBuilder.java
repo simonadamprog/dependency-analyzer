@@ -5,7 +5,13 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.artifacts.ResolvedDependency;
 
+import java.util.*;
+
 public class DependencyGraphBuilder {
+
+    private final Set<String> circularDependenciesDetected;
+
+    private final Stack<String> circularDependencyDetectorStack;
 
     private DependencyGraph dependencyGraph;
 
@@ -13,7 +19,11 @@ public class DependencyGraphBuilder {
 
     private Project currentProject;
 
-    private DependencyGraphBuilder() {}
+    private DependencyGraphBuilder() {
+        circularDependenciesDetected = new HashSet<>();
+        circularDependencyDetectorStack = new Stack<>();
+
+    }
 
     public DependencyGraphBuilder rootProject(Project rootProject) {
         this.rootProject = rootProject;
@@ -27,6 +37,7 @@ public class DependencyGraphBuilder {
         addProjectToDependencyGraph(rootProject);
         addSubprojectsToDependencyGraph();
         addLibrariesForAllProjectsAndSetConnections();
+        displayErrorsIfAny();
         return dependencyGraph;
     }
 
@@ -40,14 +51,6 @@ public class DependencyGraphBuilder {
                 project.getDisplayName());
     }
 
-    private String getProjectCombinedId(Project project) {
-        return String.format(
-                "%s:%s:%s",
-                project.getGroup(),
-                project.getName(),
-                project.getVersion());
-    }
-
     private void addSubprojectsToDependencyGraph() {
         rootProject.getSubprojects()
                 .forEach(this::addProjectToDependencyGraph);
@@ -58,13 +61,39 @@ public class DependencyGraphBuilder {
         loopThroughSubprojects();
     }
 
+    private void displayErrorsIfAny() {
+        if (containsCircularDependency()) {
+            displayCircularDependencies();
+        }
+    }
+
     private void addLibrariesForProjectAndSetConnections(Project project) {
         storeAsCurrentProject(project);
+        pushProjectToCircularityCheck();
         loopThroughConfigurations();
+        popProjectFromCircularityCheck();
+    }
+
+    private String getProjectCombinedId(Project project) {
+        return String.format(
+                "%s:%s:%s",
+                project.getGroup(),
+                project.getName(),
+                project.getVersion());
     }
 
     private void storeAsCurrentProject(Project project) {
         currentProject = project;
+    }
+
+    private void pushProjectToCircularityCheck() {
+        circularDependencyDetectorStack.push(
+                getProjectCombinedId(currentProject)
+        );
+    }
+
+    private void popProjectFromCircularityCheck() {
+        circularDependencyDetectorStack.pop();
     }
 
     private void loopThroughConfigurations() {
@@ -83,15 +112,26 @@ public class DependencyGraphBuilder {
         configuration
                 .getFirstLevelModuleDependencies()
                 .forEach(dependency ->
-                        addDependency(
+                        addDependencyWrappedByCircularityDetection(
                                 getProjectCombinedId(currentProject),
                                 dependency));
     }
 
-    private void addDependency(String parentId, ResolvedDependency dependency) {
+    private void addDependencyWrappedByCircularityDetection(String parentId, ResolvedDependency dependency) {
+        createNodeAndConnection(parentId, dependency);
+        if (circularDependencyDetectorStack.contains(dependency.getName())) {
+            storeCircularDependencyMarker(parentId, dependency.getName());
+        }
+        else {
+            circularDependencyDetectorStack.push(dependency.getName());
+            loopThroughChildDependencies(dependency);
+            circularDependencyDetectorStack.pop();
+        }
+    }
+
+    private void createNodeAndConnection(String parentId, ResolvedDependency dependency) {
         createDependencyNode(dependency.getName());
         establishConnection(parentId, dependency.getName());
-        loopThroughChildDependencies(dependency);
     }
 
     private void createDependencyNode(String combinedId) {
@@ -108,14 +148,47 @@ public class DependencyGraphBuilder {
 
     private void loopThroughChildDependencies(ResolvedDependency dependency) {
         dependency.getChildren().forEach(child ->
-                addDependency(
+                addDependencyWrappedByCircularityDetection(
                         dependency.getName(),
                         child));
+    }
+
+    private void storeCircularDependencyMarker(String parentId, String childId) {
+        circularDependenciesDetected.add(
+                combineCircularDependencyMarker(parentId, childId));
+    }
+
+    private String combineCircularDependencyMarker(String parentId, String childId) {
+        return String.format(
+                "%s --> %s",
+                parentId,
+                childId);
     }
 
     private void loopThroughSubprojects() {
         rootProject.getSubprojects()
                 .forEach(this::addLibrariesForProjectAndSetConnections);
+    }
+
+    private boolean containsCircularDependency() {
+        return !circularDependenciesDetected.isEmpty();
+    }
+
+    private void displayCircularDependencies() {
+        printWarningMessage();
+        loopThroughCircularDependencies();
+    }
+
+    private void printWarningMessage() {
+        System.out.println("!!! Warning !!! Circular dependencies detected:");
+    }
+
+    private void loopThroughCircularDependencies() {
+        circularDependenciesDetected.forEach(this::printCircularDependency);
+    }
+
+    private void printCircularDependency(String circularDependencyMarker) {
+        System.out.printf("    %s%n", circularDependencyMarker);
     }
 
     public static DependencyGraphBuilder create() {
