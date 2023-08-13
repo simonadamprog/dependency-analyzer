@@ -5,11 +5,42 @@
 ## Gradle Plugin to analyze dependencies of a project structure.
 
 ---
+
 ### Features
 
+#### `printDependencyTree` Task
 - Listing dependency tree of project.
+- :warning: Only works currently when project does not contain
+circular dependencies.
+- :warning: This task is for testing.
+Use gradle's build in `dependencies` task instead.
+
+#### `searchLibraryConnections` Task 
+- Primary Goal: Analyzing connections of a transitive dependency:
+  - Find root library - containing the transitive dependency -
+  that is used directly by a project.
+  - Find projects that are using the given dependency directly.
+- Secondary objectives:
+  - Display all unique dependencies in ascending order.
+  - Display dependency graph statistics.
+  - Display circular dependencies.
+
+### Usage
+
+#### `searchLibraryConnections`:
+You must call this gradle task with the `lib` parameter,
+giving it the `{groupId}:{name}:{version}` library identifier.
+
+Optional flag parameters are:
+- `list`: Display all unique dependencies in name order.
+- `stats`: Display the node and connection count
+in the dependency graph.
+- `circular`: Display circular dependency chains.
 
 ### Manual Testing
-- Run `publishing/publishToMavenLocal` gradle task in `core` module.
-- In IntelliJ Sometimes you need to `Reload All Gradle Projects`.
-- Run `dependency-analyzer/printAllDependencies` gradle task in `test-app` module.
+- Run `publishing/publishToMavenLocal` gradle task
+in `core` module.
+- Run `dependency-analyzer/printAllDependencies` gradle task
+in the root project.
+- Run `dependency-analyzer/searchLibraryConnections` gradle task
+in the root project with the given parameters. (See `Usage`.)

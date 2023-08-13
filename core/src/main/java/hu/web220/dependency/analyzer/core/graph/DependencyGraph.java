@@ -7,16 +7,62 @@ public class DependencyGraph {
 
     private final Map<String, DependencyNode> dependencyMap;
 
-    private int printListCounter;
+    final Set<List<String>> circularityStore;
 
     private int creationCounter = 0;
 
     private int connectionCounter = 0;
 
-    private ProjectNode projectNodeToPrint = null;
+    public static DependencyGraph create() {
+        return new DependencyGraph();
+    }
 
     private DependencyGraph() {
         dependencyMap = new TreeMap<>();
+        circularityStore = new HashSet<>();
+    }
+
+    public int getCreationCounter() {
+        return creationCounter;
+    }
+
+    public int getConnectionCounter() {
+        return connectionCounter;
+    }
+
+    public Set<List<String>> getCircularityStore() {
+        return circularityStore
+                .stream()
+                .map(ArrayList::new)
+                .collect(Collectors.toSet());
+    }
+
+    public List<String> getAllUniqueDependencies() {
+        return dependencyMap.values()
+                .stream()
+                .map(this::nodeToStringBasedOnNodeType)
+                .sorted()
+                .collect(Collectors.toList());
+    }
+
+    private String nodeToStringBasedOnNodeType(DependencyNode node) {
+        if (isProjectNode(node)) {
+            return projectNodeToString(node);
+        }
+        else {
+            return node.getCombinedId();
+        }
+    }
+
+    private boolean isProjectNode(DependencyNode node) {
+        return node instanceof ProjectNode;
+    }
+
+    private String projectNodeToString(DependencyNode node) {
+        ProjectNode projectNode = (ProjectNode) node;
+        return String.format(":: %s (%s)",
+                projectNode.getDisplayName(),
+                projectNode.getCombinedId());
     }
 
     public void createProjectDependencyIfNotExists(String combinedId, String displayName) {
@@ -46,17 +92,6 @@ public class DependencyGraph {
         return !containsDependency(combinedId);
     }
 
-    public boolean containsConnection(String parentId, String childId) {
-        return containsDependency(parentId)
-                && containsDependency(childId)
-                && dependencyMap.get(childId)
-                        .containsParentDependency(dependencyMap.get(parentId));
-    }
-
-    public boolean notContainsConnection(String parentID, String childId) {
-        return !containsConnection(parentID, childId);
-    }
-
     public void createLibraryDependencyIfNotExists(String combinedId) {
         if (notContainsDependency(combinedId)) {
             createLibraryDependency(combinedId);
@@ -77,58 +112,6 @@ public class DependencyGraph {
 
     void increaseConnectionCounter() {
         connectionCounter++;
-    }
-
-    public void printStatistics() {
-        System.out.printf(
-                "Statistics: There are %d nodes and %d connections created in dependency graph.%n",
-                creationCounter,
-                connectionCounter);
-    }
-
-    public void printDependencyListInAscendingOrder() {
-        restartPrintListCounter();
-        loopThroughDependenciesToPrint();
-    }
-
-    private void restartPrintListCounter() {
-        printListCounter = 1;
-    }
-
-    private void loopThroughDependenciesToPrint() {
-        dependencyMap.forEach(this::printNodeBasedOnNodeType);
-    }
-
-    private void printNodeBasedOnNodeType(String combinedId, DependencyNode node) {
-        getProjectNodeIfValid(node);
-        if (isProjectNode()) {
-            printProjectNode(combinedId);
-        }
-        else {
-            printLibraryNode(combinedId);
-        }
-    }
-
-    private void getProjectNodeIfValid(DependencyNode node) {
-        projectNodeToPrint = node instanceof ProjectNode
-                ? (ProjectNode) node : null;
-    }
-
-    private boolean isProjectNode() {
-        return projectNodeToPrint != null;
-    }
-
-    private void printProjectNode(String combinedId) {
-        System.out.printf("%d. %s (%s)%n",
-                printListCounter++,
-                projectNodeToPrint.getDisplayName(),
-                combinedId);
-    }
-
-    private void printLibraryNode(String combinedId) {
-        System.out.printf("%d. %s%n",
-                printListCounter++,
-                combinedId);
     }
 
     public List<String> getRootLibraryIds(String libraryId) {
@@ -164,9 +147,5 @@ public class DependencyGraph {
                 .map(parent -> ((ProjectNode) parent).getDisplayName())
                 .sorted()
                 .collect(Collectors.toList());
-    }
-
-    public static DependencyGraph create() {
-        return new DependencyGraph();
     }
 }
