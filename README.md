@@ -25,7 +25,13 @@ Use gradle's build in `dependencies` task instead.
   - Display dependency graph statistics.
   - Display circular dependencies.
 
+Tested with Gradle 7.5.1
+
 ### Usage
+
+#### Plugin
+- To add this plugin to your root project:
+  - `id 'hu.web220.dependency.analyzer' version '1.0.0'` (Under approval)
 
 #### `searchLibraryConnections`:
 You must call this gradle task with the `lib` parameter,

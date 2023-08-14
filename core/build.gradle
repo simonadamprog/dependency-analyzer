@@ -10,6 +10,7 @@ plugins {
     // Apply the Java Gradle plugin development plugin to add support for developing Gradle plugins
     id 'java-gradle-plugin'
     id 'maven-publish'
+    id 'com.gradle.plugin-publish' version '0.21.0'
 }
 
 dependencies {
@@ -21,11 +22,19 @@ dependencies {
 gradlePlugin {
     // Define the plugin
     plugins {
-        dependencyAnalyzer {
+        create('dependencyAnalyzer') {
             id = 'hu.web220.dependency.analyzer'
             implementationClass = 'hu.web220.dependency.analyzer.core.DependencyAnalyzerPlugin'
+            displayName = 'Dependency Analyzer Gradle Plugin'
         }
     }
+}
+
+pluginBundle {
+    website = 'https://web220.hu/dependency-analyzer/'
+    vcsUrl = 'https://github.com/adtewa/dependency-analyzer'
+    description = "Analyzing dependencies. Finding root library for a transitive dependency."
+    tags = ["dependency", "analyzer", "java", "project", "jar"]
 }
 
 group 'hu.web220.dependency.analyzer.core'

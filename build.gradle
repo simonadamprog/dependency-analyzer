@@ -1,9 +1,9 @@
 plugins {
-    id 'hu.web220.dependency.analyzer' version '0.1.0'
+    id 'hu.web220.dependency.analyzer' version '1.0.0'
 }
 
 group 'hu.web220.dependency.analyzer'
-version '0.1.0'
+version '1.0.0'
 
 allprojects {
     repositories {
