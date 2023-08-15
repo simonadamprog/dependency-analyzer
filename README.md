@@ -13,7 +13,7 @@
 - :warning: Only works currently when project does not contain
 circular dependencies.
 - :warning: This task is for testing.
-Use gradle's build in `dependencies` task instead.
+Use gradle's built-in `dependencies` task instead.
 
 #### `searchLibraryConnections` Task 
 - Primary Goal: Analyzing connections of a transitive dependency:
@@ -31,7 +31,7 @@ Tested with Gradle 7.5.1
 
 #### Plugin
 - To add this plugin to your root project:
-  - `id 'hu.web220.dependency.analyzer' version '1.0.0'` (Under approval)
+  - `id 'hu.web220.dependency-analyzer' version '1.0.0'` (Pending approval)
 
 #### `searchLibraryConnections`:
 You must call this gradle task with the `lib` parameter,
