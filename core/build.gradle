@@ -23,7 +23,7 @@ gradlePlugin {
     // Define the plugin
     plugins {
         create('dependencyAnalyzer') {
-            id = 'hu.web220.dependency.analyzer'
+            id = 'hu.web220.dependency-analyzer'
             implementationClass = 'hu.web220.dependency.analyzer.core.DependencyAnalyzerPlugin'
             displayName = 'Dependency Analyzer Gradle Plugin'
         }
@@ -33,7 +33,10 @@ gradlePlugin {
 pluginBundle {
     website = 'https://web220.hu/dependency-analyzer/'
     vcsUrl = 'https://github.com/adtewa/dependency-analyzer'
-    description = "Analyzing dependencies. Finding root library for a transitive dependency."
+    description = "Analyzing dependencies in a multi-project codebase. " +
+            "Finding root library for a transitive dependency. " +
+            "Displaying unique dependency list. " +
+            "Finding all circular dependency chains."
     tags = ["dependency", "analyzer", "java", "project", "jar"]
 }
 
