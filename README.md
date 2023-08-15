@@ -27,13 +27,15 @@ Use gradle's built-in `dependencies` task instead.
 
 Tested with Gradle 7.5.1
 
+---
+
 ### Usage
 
 #### Plugin
 - To add this plugin to your root project:
   - `id 'hu.web220.dependency-analyzer' version '1.0.0'` (Pending approval)
 
-#### `searchLibraryConnections`:
+#### searchLibraryConnections task:
 You must call this gradle task with the `lib` parameter,
 giving it the `{groupId}:{name}:{version}` library identifier.
 
@@ -43,6 +45,8 @@ Optional flag parameters are:
 in the dependency graph.
 - `circular`: Display circular dependency chains.
 
+---
+
 ### Manual Testing
 - Run `publishing/publishToMavenLocal` gradle task
 in `core` module.
@@ -50,3 +54,13 @@ in `core` module.
 in the root project.
 - Run `dependency-analyzer/searchLibraryConnections` gradle task
 in the root project with the given parameters. (See `Usage`.)
+
+---
+
+### Contributions
+[See contributing documentation](CONTRIBUTING.md).
+
+---
+
+### License
+This repository is licensed under the [MIT License](LICENSE).
