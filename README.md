@@ -6,6 +6,18 @@
 
 ---
 
+### To add this plugin to your project:
+[Visit Gradle Plugin Portal](https://plugins.gradle.org/plugin/hu.web220.dependency-analyzer)
+
+---
+
+### Tested with:
+- Gradle 7.5.1
+- Java 8
+- Java 17
+
+---
+
 ### Features
 
 #### `printDependencyTree` Task
@@ -25,15 +37,9 @@ Use gradle's built-in `dependencies` task instead.
   - Display dependency graph statistics.
   - Display circular dependencies.
 
-Tested with Gradle 7.5.1
-
 ---
 
-### Usage
-
-#### Plugin
-- To add this plugin to your root project:
-  - `id 'hu.web220.dependency-analyzer' version '1.0.0'` (Pending approval)
+### <a name="usage"></a>Usage
 
 #### searchLibraryConnections task:
 You must call this gradle task with the `lib` parameter,
@@ -53,7 +59,7 @@ in `core` module.
 - Run `dependency-analyzer/printAllDependencies` gradle task
 in the root project.
 - Run `dependency-analyzer/searchLibraryConnections` gradle task
-in the root project with the given parameters. (See `Usage`.)
+in the root project with the given parameters. (See [Usage](#usage))
 
 ---
 
