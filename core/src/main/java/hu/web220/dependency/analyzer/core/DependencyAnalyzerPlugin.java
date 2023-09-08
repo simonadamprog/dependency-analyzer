@@ -4,9 +4,8 @@
 package hu.web220.dependency.analyzer.core;
 
 import hu.web220.dependency.analyzer.core.tasks.LibraryConnectionsSearchTask;
-import hu.web220.dependency.analyzer.core.tasks.DependencyTreePrintingTask;
-import org.gradle.api.Project;
 import org.gradle.api.Plugin;
+import org.gradle.api.Project;
 
 /**
  * A simple 'hello world' plugin.
@@ -16,7 +15,6 @@ public class DependencyAnalyzerPlugin implements Plugin<Project> {
     public static final String TASK_GROUP = "dependency-analyzer";
 
     public void apply(Project project) {
-        project.getTasks().register("printDependencyTree", DependencyTreePrintingTask.class);
         project.getTasks().register("searchLibraryConnections", LibraryConnectionsSearchTask.class);
     }
 }

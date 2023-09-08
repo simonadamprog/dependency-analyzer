@@ -1,5 +1,6 @@
 package hu.web220.dependency.analyzer.core.graph;
 
+import hu.web220.dependency.analyzer.core.util.CircularityDetection;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedConfiguration;
@@ -196,45 +197,8 @@ public class DependencyGraphBuilder {
     private boolean isCircularDependencyNotStored() {
         return dependencyGraph.circularityStore
                 .stream()
-                .noneMatch(this::isListCircularlyTheSame);
-    }
-
-    // TODO: refactor into smaller chunks
-    private boolean isListCircularlyTheSame(List<String> existingList) {
-        Iterator<String> existingIterator = existingList.listIterator();
-        Iterator<String> candidateIterator = marker.listIterator();
-        String candidateCurrentValue;
-        boolean foundFirstMatch = false;
-        boolean resetExistingIteratorOnce = false;
-        if (candidateIterator.hasNext()) {
-            candidateCurrentValue = candidateIterator.next();
-        }
-        else {
-            return false;
-        }
-        while (existingIterator.hasNext()) {
-            if (candidateCurrentValue.equals(existingIterator.next())) {
-                foundFirstMatch = true;
-                break;
-            }
-        }
-        if (!foundFirstMatch) {
-            return false;
-        }
-        while (existingIterator.hasNext() && candidateIterator.hasNext()) {
-            if (!candidateIterator.next().equals(existingIterator.next())) {
-                return false;
-            }
-        }
-        if (!existingIterator.hasNext()) {
-            existingIterator = existingList.listIterator();
-        }
-        while (existingIterator.hasNext() && candidateIterator.hasNext()) {
-            if (!candidateIterator.next().equals(existingIterator.next())) {
-                return false;
-            }
-        }
-        return !candidateIterator.hasNext();
+                .noneMatch(circularity ->
+                        CircularityDetection.isListCircularlyTheSame(circularity, marker));
     }
 
     private void storeCircularDependencyMarker() {
@@ -243,7 +207,7 @@ public class DependencyGraphBuilder {
 
     private void loopThroughChildDependenciesWrappedByCircularityDetectionPart() {
         pushDependencyIdToStack();
-        loopThroughChildDependencies();
+        loopThroughChildDependencies(currentDependency);
         popDependencyIdFromStack();
     }
 
@@ -251,10 +215,10 @@ public class DependencyGraphBuilder {
         circularDependencyDetectorStack.push(currentDependencyId);
     }
 
-    private void loopThroughChildDependencies() {
+    private void loopThroughChildDependencies(ResolvedDependency currentDependency) {
         currentDependency.getChildren().forEach(child ->
                 addDependenciesRecursivelyWithCircularityDetection(
-                        currentDependencyId,
+                        currentDependency.getName(),
                         child));
     }
 

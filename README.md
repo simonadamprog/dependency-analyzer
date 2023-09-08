@@ -20,16 +20,9 @@
 
 ### Features
 
-#### `printDependencyTree` Task
-- Listing dependency tree of project.
-- :warning: Only works currently when project does not contain
-circular dependencies.
-- :warning: This task is for testing.
-Use gradle's built-in `dependencies` task instead.
-
 #### `searchLibraryConnections` Task 
 - Primary Goal: Analyzing connections of a transitive dependency:
-  - Find root library - containing the transitive dependency -
+  - Find root library (direct library dependency / first-level library dependency of a project) - containing the transitive dependency -
   that is used directly by a project.
   - Find projects that are using the given dependency directly.
 - Secondary objectives:
@@ -56,8 +49,6 @@ in the dependency graph.
 ### Manual Testing
 - Run `publishing/publishToMavenLocal` gradle task
 in `core` module.
-- Run `dependency-analyzer/printAllDependencies` gradle task
-in the root project.
 - Run `dependency-analyzer/searchLibraryConnections` gradle task
 in the root project with the given parameters. (See [Usage](#usage))
 

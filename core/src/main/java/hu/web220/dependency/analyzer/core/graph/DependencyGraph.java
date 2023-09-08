@@ -9,6 +9,8 @@ public class DependencyGraph {
 
     final Set<List<String>> circularityStore;
 
+    private Deque<String> dependencyStack;
+
     private int creationCounter = 0;
 
     private int connectionCounter = 0;
@@ -20,6 +22,7 @@ public class DependencyGraph {
     private DependencyGraph() {
         dependencyMap = new TreeMap<>();
         circularityStore = new HashSet<>();
+        dependencyStack = new ArrayDeque<>();
     }
 
     public int getCreationCounter() {
@@ -129,12 +132,21 @@ public class DependencyGraph {
             return Collections.emptyList();
         }
         List<String> rootLibraryIds = new ArrayList<>();
+        if (isCircular(node.combinedId)) {
+            return rootLibraryIds;
+        }
+        dependencyStack.push(node.getCombinedId());
         node.parentDependencies.forEach(parent ->
-            rootLibraryIds.addAll(getRootLibrariesRecursively(parent)));
+                rootLibraryIds.addAll(getRootLibrariesRecursively(parent)));
+        dependencyStack.pop();
         if (rootLibraryIds.isEmpty()) {
             rootLibraryIds.add(node.combinedId);
         }
         return rootLibraryIds;
+    }
+
+    private boolean isCircular(String dependencyId) {
+        return dependencyStack.contains(dependencyId);
     }
 
     public List<String> getProjectParents(String libraryId) {
