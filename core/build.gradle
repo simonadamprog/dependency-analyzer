@@ -34,10 +34,13 @@ pluginBundle {
     website = 'https://web220.hu/dependency-analyzer/'
     vcsUrl = 'https://github.com/adtewa/dependency-analyzer'
     description = "Analyzing dependencies in a multi-project codebase. " +
-            "Finding root library for a transitive dependency. " +
+            "Finding root library (direct library dependency / " +
+            "first-level library dependency) for a transitive dependency " +
+            "and their depending projects that directly use them." +
             "Displaying unique dependency list. " +
             "Finding all circular dependency chains."
-    tags = ["dependency", "analyzer", "java", "project", "jar"]
+    tags = ["dependency", "analyzer", "java", "project", "jar", "first-level dependency",
+    "direct dependency", "root dependency"]
 }
 
 group 'hu.web220.dependency.analyzer.core'

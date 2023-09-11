@@ -22,9 +22,9 @@
 
 #### `searchLibraryConnections` Task 
 - Primary Goal: Analyzing connections of a transitive dependency:
-  - Find root library (direct library dependency / first-level library dependency of a project) - containing the transitive dependency -
-  that is used directly by a project.
-  - Find projects that are using the given dependency directly.
+  - Find root library (direct library dependency / first-level library dependency of a project) - 
+containing the transitive dependency - that is used directly by a project.
+  - Find projects that are using the found root dependencies directly.
 - Secondary objectives:
   - Display all unique dependencies in ascending order.
   - Display dependency graph statistics.
@@ -47,12 +47,18 @@ in the dependency graph.
 ---
 
 ### Manual Testing
+- Add a new project version number in the main build.gradle, 
+that is not taken by a published plugin already. 
 - Run `publishing/publishToMavenLocal` gradle task
 in `core` module.
+- Set the new version number for the plugin in the main build.gradle.
 - Run `dependency-analyzer/searchLibraryConnections` gradle task
 in the root project with the given parameters. (See [Usage](#usage))
 
 ---
+
+### Debugging
+For debugging it is the best to start the functional test in debug mode.
 
 ### Contributions
 [See contributing documentation](CONTRIBUTING.md).
