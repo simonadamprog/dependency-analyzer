@@ -1,9 +1,13 @@
 package hu.web220.dependency.analyzer.core.display;
 
+import org.gradle.api.logging.Logger;
+
 import java.util.List;
 import java.util.Set;
 
 public class LibraryConnectionsSearchDisplay {
+
+    private Logger log;
 
     private boolean isDisplayUniqueDependencies;
 
@@ -19,9 +23,7 @@ public class LibraryConnectionsSearchDisplay {
 
     private List<String> allDependencies;
 
-    private List<String> rootLibraries;
-
-    private List<String> directProjects;
+    private List<RootLibraryDetails> rootLibraries;
 
     private int nodeCount;
 
@@ -36,7 +38,6 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     private LibraryConnectionsSearchDisplay() {
-
     }
 
     public LibraryConnectionsSearchDisplay isDisplayUniqueDependencies(boolean idDisplayUniqueDependencies) {
@@ -51,6 +52,11 @@ public class LibraryConnectionsSearchDisplay {
 
     public LibraryConnectionsSearchDisplay isDisplayCircularDependencies(boolean isDisplayCircularDependencies) {
         this.isDisplayCircularDependencies = isDisplayCircularDependencies;
+        return this;
+    }
+
+    public LibraryConnectionsSearchDisplay logger(Logger logger) {
+        this.log = logger;
         return this;
     }
 
@@ -74,13 +80,8 @@ public class LibraryConnectionsSearchDisplay {
         return this;
     }
 
-    public LibraryConnectionsSearchDisplay rootLibraries(List<String> rootLibraries) {
+    public LibraryConnectionsSearchDisplay rootLibrariesWithDependingModules(List<RootLibraryDetails> rootLibraries) {
         this.rootLibraries = rootLibraries;
-        return this;
-    }
-
-    public LibraryConnectionsSearchDisplay directProjects(List<String> directProjects) {
-        this.directProjects = directProjects;
         return this;
     }
 
@@ -121,7 +122,7 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     private void displayAllDependenciesHeader() {
-        System.out.println("All unique dependencies are:");
+        log.quiet("All unique dependencies are:");
     }
 
     private void loopThroughDependenciesToDisplay() {
@@ -129,7 +130,7 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     private void displayLineFromAllDependencies(String dependency) {
-        System.out.printf("    %d. %s%n",
+        log.quiet("    {}. {}",
                 displayListCounter++,
                 dependency);
     }
@@ -142,8 +143,8 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     public void displayStatistics() {
-        System.out.printf(
-                "Statistics: There are %d nodes and %d connections created in dependency graph.%n",
+        log.quiet(
+                "Statistics: There are {} nodes and {} connections created in dependency graph.",
                 nodeCount,
                 connectionCount);
     }
@@ -154,7 +155,7 @@ public class LibraryConnectionsSearchDisplay {
                 displayCircularDependencies();
             }
             else {
-                System.out.println("Circular dependencies are not found.");
+                log.quiet("Circular dependencies are not found.");
             }
             displaySeparator();
         }
@@ -171,7 +172,7 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     private void displayWarningMessage() {
-        System.out.println("!!! Warning !!! Circular dependencies detected:");
+        log.quiet("!!! Warning !!! Circular dependencies detected:");
     }
 
     private void loopThroughCircularDependencyMarkers() {
@@ -193,27 +194,25 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     private void displayCombinedCircularDependencyMarker() {
-        System.out.printf("    %d. %s%n",
+        log.quiet("    {}. {}",
                 displayListCounter++,
                 combinedCircularDependency);
     }
 
     private void displayLibraryId() {
-        System.out.printf(
-                "Given input (trimmed to 200 character length) is: %s%n",
+        log.quiet("Given input (trimmed to 200 character length) is: {}",
                 libraryId);
         displaySeparator();
     }
 
     private void displayExists() {
-        System.out.printf("Library search from given input: %s%n", containsDependency ? "FOUND" : "NOT FOUND");
+        log.quiet("Library search from given input: {}", containsDependency ? "FOUND" : "NOT FOUND");
         displaySeparator();
     }
 
     private void displayConnectionsIfAnyExist() {
         if (containsDependency) {
             printRootLibraries();
-            displayDirectProjectDependenciesIfAny();
         }
     }
 
@@ -230,45 +229,33 @@ public class LibraryConnectionsSearchDisplay {
     }
 
     private void displayRootLibrariesFoundMessage() {
-        System.out.println("Found root Libraries are:");
+        log.quiet("The found root libraries and the depending project modules are:");
     }
 
     private void displayRootLibraries() {
-        rootLibraries.stream()
-                .map(library -> {
-                    if (library.equals(libraryId)){
-                        return library + " (the searched library itself is a root Library)";
-                    }
-                    return library;
-                })
-                .forEach(this::displayDependency);
+        rootLibraries.forEach(this::displayRootLibraryWithDependingModules);
     }
 
-    private void displayDirectProjectDependenciesIfAny() {
-        if (isDisplayDirectProjectDependencies()) {
-            displayDirectProjectsHeader();
-            displayDirectProjects();
-            displaySeparator();
-        }
+    private void displayRootLibraryWithDependingModules(RootLibraryDetails rootLibraryDetails) {
+        log.quiet("    {}{}",
+                rootLibraryDetails.getLibraryId(),
+                textIfLibraryIsRootLibraryItself(rootLibraryDetails.getLibraryId()));
+        rootLibraryDetails.getDependingModules().forEach(this::displayUserProject);
     }
 
-    private boolean isDisplayDirectProjectDependencies() {
-        return !directProjects.isEmpty();
+    private String textIfLibraryIsRootLibraryItself(String libraryId) {
+        return (libraryId.equals(this.libraryId))
+                ? " (The searched library is itself a root library.)"
+                : "";
     }
 
-    private void displayDirectProjectsHeader() {
-        System.out.println("Modules that contain this library directly:");
-    }
-
-    private void displayDirectProjects() {
-        directProjects.forEach(this::displayDependency);
-    }
-
-    private void displayDependency(String combinedId) {
-        System.out.printf("   %s%n", combinedId);
+    private void displayUserProject(String userProject) {
+        log.quiet("        {}", userProject);
     }
 
     private void displaySeparator() {
-        System.out.printf("%n # # # # # %n%n");
+        log.quiet("{} # # # # # {}",
+                System.lineSeparator(),
+                System.lineSeparator());
     }
 }

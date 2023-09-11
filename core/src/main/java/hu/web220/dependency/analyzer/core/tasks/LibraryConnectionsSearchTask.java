@@ -47,14 +47,14 @@ public abstract class LibraryConnectionsSearchTask extends DefaultTask {
     private void printDependencyGraphDetails() {
         LibraryConnectionsSearchDisplay
                 .create()
+                .logger(getLogger())
                 .libraryId(libraryId)
                 .isDisplayUniqueDependencies(isDisplayList())
                 .allUniqueDependencies(dependencyGraph.getAllUniqueDependencies())
                 .isDisplayCircularDependencies(isDisplayCircular())
                 .containsDependency(dependencyGraph.containsDependency(libraryId))
                 .circularDependencies(dependencyGraph.getCircularityStore())
-                .rootLibraries(dependencyGraph.getRootLibraryIds(libraryId))
-                .directProjects(dependencyGraph.getProjectParents(libraryId))
+                .rootLibrariesWithDependingModules(dependencyGraph.getRootLibraryDetails(libraryId))
                 .isDisplayStatistics(isDisplayStats())
                 .nodeCount(dependencyGraph.getCreationCounter())
                 .connectionCount(dependencyGraph.getConnectionCounter())

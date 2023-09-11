@@ -27,7 +27,7 @@ class LibraryConnectionsSearchTaskTest {
                 .withPluginClasspath()
                 .withArguments(
                         "searchLibraryConnections",
-                        "-Plib=org.apache.commons:commons-math3:3.6.1",
+                        "-Plib=org.yaml:snakeyaml:1.30",
                         "-Plist",
                         "-Pstats",
                         "-Pcircular")
@@ -37,12 +37,18 @@ class LibraryConnectionsSearchTaskTest {
 
     private void asserts() {
         assertInput();
+        assertFound();
         assertCircularDependencyWarning();
     }
 
     private void assertInput() {
         assertTrue(result.getOutput().contains(
-                "Given input (trimmed to 200 character length) is: org.apache.commons:commons-math3:3.6.1"));
+                "Given input (trimmed to 200 character length) is: org.yaml:snakeyaml:1.30"));
+    }
+
+    private void assertFound() {
+        assertTrue(result.getOutput().contains(
+                "Library search from given input: FOUND"));
     }
 
     private void assertCircularDependencyWarning() {

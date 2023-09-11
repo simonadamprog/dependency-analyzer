@@ -1,5 +1,7 @@
 package hu.web220.dependency.analyzer.core.graph;
 
+import hu.web220.dependency.analyzer.core.display.RootLibraryDetails;
+
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -9,7 +11,7 @@ public class DependencyGraph {
 
     final Set<List<String>> circularityStore;
 
-    private Deque<String> dependencyStack;
+    private final Deque<String> dependencyStack;
 
     private int creationCounter = 0;
 
@@ -117,36 +119,69 @@ public class DependencyGraph {
         connectionCounter++;
     }
 
-    public List<String> getRootLibraryIds(String libraryId) {
+    public List<RootLibraryDetails> getRootLibraryDetails(String libraryId) {
         if (notContainsDependency(libraryId)) {
             return Collections.emptyList();
         }
         DependencyNode node = dependencyMap.get(libraryId);
-        List<String> list = getRootLibrariesRecursively(node);
-        Collections.sort(list);
-        return list;
+        Set<String> rootLibraries = getRootLibrariesRecursively(node);
+        return gatherRootLibraryDetails(rootLibraries);
     }
 
-    private List<String> getRootLibrariesRecursively(DependencyNode node) {
-        if (node instanceof ProjectNode) {
-            return Collections.emptyList();
+    private Set<String> getRootLibrariesRecursively(DependencyNode node) {
+
+        Set<String> rootLibraryIds;
+
+        if (isProjectNodeOrIsCircular(node)) {
+            return Collections.emptySet();
         }
-        List<String> rootLibraryIds = new ArrayList<>();
-        if (isCircular(node.combinedId)) {
-            return rootLibraryIds;
-        }
-        dependencyStack.push(node.getCombinedId());
-        node.parentDependencies.forEach(parent ->
-                rootLibraryIds.addAll(getRootLibrariesRecursively(parent)));
-        dependencyStack.pop();
-        if (rootLibraryIds.isEmpty()) {
-            rootLibraryIds.add(node.combinedId);
-        }
+
+        optInForCircularityCheck(node.getCombinedId());
+
+        rootLibraryIds = gatherRootLibrariesOfParents(node);
+
+        optOutFromCircularityCheck();
+
         return rootLibraryIds;
+    }
+
+    private boolean isProjectNodeOrIsCircular(DependencyNode node) {
+        return isProjectNode(node) || isCircular(node.combinedId);
     }
 
     private boolean isCircular(String dependencyId) {
         return dependencyStack.contains(dependencyId);
+    }
+
+    private void optInForCircularityCheck(String dependencyId) {
+        dependencyStack.push(dependencyId);
+    }
+
+    private Set<String> gatherRootLibrariesOfParents(DependencyNode node) {
+        Set<String> rootLibraryIds = new HashSet<>();
+        node.parentDependencies.forEach(parent -> {
+            if (isProjectNode(parent)) {
+                rootLibraryIds.add(node.getCombinedId());
+            }
+            rootLibraryIds.addAll(getRootLibrariesRecursively(parent));
+        });
+        return rootLibraryIds;
+    }
+
+    private void optOutFromCircularityCheck() {
+        dependencyStack.pop();
+    }
+
+    private List<RootLibraryDetails> gatherRootLibraryDetails(Set<String> rootLibraries) {
+        return rootLibraries.stream()
+                .sorted()
+                .map(this::mapRootLibraryIdToRootLibraryDetails)
+                .collect(Collectors.toList());
+    }
+
+    private RootLibraryDetails mapRootLibraryIdToRootLibraryDetails(String libraryId) {
+        List<String> dependingModules = getProjectParents(libraryId);
+        return new RootLibraryDetails(libraryId, dependingModules);
     }
 
     public List<String> getProjectParents(String libraryId) {
@@ -154,10 +189,18 @@ public class DependencyGraph {
             return Collections.emptyList();
         }
         DependencyNode node = dependencyMap.get(libraryId);
+        return gatherProjectParents(node);
+    }
+
+    private List<String> gatherProjectParents(DependencyNode node) {
         return node.parentDependencies.stream()
-                .filter(parent -> parent instanceof ProjectNode)
-                .map(parent -> ((ProjectNode) parent).getDisplayName())
+                .filter(this::isProjectNode)
+                .map(this::getProjectDisplayName)
                 .sorted()
                 .collect(Collectors.toList());
+    }
+
+    private String getProjectDisplayName(DependencyNode node) {
+        return ((ProjectNode) node).getDisplayName();
     }
 }

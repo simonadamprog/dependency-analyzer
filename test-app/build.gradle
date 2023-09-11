@@ -12,5 +12,6 @@ dependencies {
     implementation project(':test-app:subsubproject')
     implementation project(':circular-test-left')
     implementation project(':circular-test-right')
+    implementation 'org.yaml:snakeyaml:1.30'
     implementation 'org.springframework.boot:spring-boot-starter:2.7.6'
 }
