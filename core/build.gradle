@@ -23,8 +23,8 @@ gradlePlugin {
     // Define the plugin
     plugins {
         create('dependencyAnalyzer') {
-            id = 'hu.web220.dependency-analyzer'
-            implementationClass = 'hu.web220.dependency.analyzer.core.DependencyAnalyzerPlugin'
+            id = 'hu.simonadamprog.dependency-analyzer'
+            implementationClass = 'hu.simonadamprog.dependency.analyzer.core.DependencyAnalyzerPlugin'
             displayName = 'Dependency Analyzer Gradle Plugin'
         }
     }
@@ -32,18 +32,18 @@ gradlePlugin {
 
 pluginBundle {
     website = 'https://web220.hu/dependency-analyzer/'
-    vcsUrl = 'https://github.com/adtewa/dependency-analyzer'
+    vcsUrl = 'https://github.com/simonadamprog/dependency-analyzer'
     description = "Analyzing dependencies in a multi-project codebase. " +
             "Finding root library (direct library dependency / " +
             "first-level library dependency) for a transitive dependency " +
-            "and their depending projects that directly use them." +
+            "and their depending projects that directly use them. " +
             "Displaying unique dependency list. " +
             "Finding all circular dependency chains."
     tags = ["dependency", "analyzer", "java", "project", "jar", "first-level dependency",
     "direct dependency", "root dependency"]
 }
 
-group 'hu.web220.dependency.analyzer.core'
+group 'hu.simonadamprog.dependency.analyzer.core'
 version rootProject.version
 
 

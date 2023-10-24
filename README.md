@@ -7,7 +7,7 @@
 ---
 
 ### To add this plugin to your project:
-[Visit Gradle Plugin Portal](https://plugins.gradle.org/plugin/hu.web220.dependency-analyzer)
+[Visit Gradle Plugin Portal](https://plugins.gradle.org/plugin/hu.simonadamprog.dependency-analyzer)
 
 ---
 

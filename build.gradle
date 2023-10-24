@@ -1,8 +1,8 @@
 plugins {
-    id 'hu.web220.dependency-analyzer' version '1.1.0'
+    id 'hu.simonadamprog.dependency-analyzer' version '1.1.0'
 }
 
-group 'hu.web220.dependency.analyzer'
+group 'hu.simonadamprog.dependency.analyzer'
 version '1.1.0'
 
 allprojects {
