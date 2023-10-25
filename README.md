@@ -60,6 +60,8 @@ in the root project with the given parameters. (See [Usage](#usage))
 ### Debugging
 For debugging it is the best to start the functional test in debug mode.
 
+---
+
 ### Contributions
 [See contributing documentation](CONTRIBUTING.md).
 
