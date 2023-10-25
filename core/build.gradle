@@ -31,7 +31,7 @@ gradlePlugin {
 }
 
 pluginBundle {
-    website = 'https://web220.hu/dependency-analyzer/'
+    website = 'https://simonadamprog.hu/dependency-analyzer/'
     vcsUrl = 'https://github.com/simonadamprog/dependency-analyzer'
     description = "Analyzing dependencies in a multi-project codebase. " +
             "Finding root library (direct library dependency / " +
