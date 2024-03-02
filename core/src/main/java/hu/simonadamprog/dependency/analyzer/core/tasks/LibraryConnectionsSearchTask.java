@@ -4,15 +4,22 @@ import hu.simonadamprog.dependency.analyzer.core.DependencyAnalyzerPlugin;
 import hu.simonadamprog.dependency.analyzer.core.graph.DependencyGraph;
 import hu.simonadamprog.dependency.analyzer.core.graph.DependencyGraphBuilder;
 import hu.simonadamprog.dependency.analyzer.core.display.LibraryConnectionsSearchDisplay;
+import hu.simonadamprog.dependency.analyzer.core.util.BuildGradleFileUtil;
 import hu.simonadamprog.dependency.analyzer.core.util.ParameterBuilder;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 
+import java.time.Instant;
+
 public abstract class LibraryConnectionsSearchTask extends DefaultTask {
 
-    private DependencyGraph dependencyGraph;
+    private static Instant dependencyGraphLastBuiltTimestamp = null;
+
+    private static DependencyGraph dependencyGraph = null;
 
     private String libraryId;
+
+    private boolean isBuiltInCurrentRun;
 
 
     public LibraryConnectionsSearchTask() {
@@ -22,7 +29,7 @@ public abstract class LibraryConnectionsSearchTask extends DefaultTask {
     @TaskAction
     public void perform() {
         loadLibraryProperty();
-        buildDependencyGraph();
+        buildDependencyGraphIfNecessary();
         printDependencyGraphDetails();
     }
 
@@ -37,11 +44,34 @@ public abstract class LibraryConnectionsSearchTask extends DefaultTask {
                 .value();
     }
 
+    private void buildDependencyGraphIfNecessary() {
+        if (isBuildGraphNecessary()) {
+            saveDependencyGraphLastBuiltTimestamp();
+            buildDependencyGraph();
+            setCurrentRunBuiltTheGraphFlag();
+        }
+    }
+
+    private boolean isBuildGraphNecessary() {
+        return dependencyGraphLastBuiltTimestamp == null ||
+                BuildGradleFileUtil.isAnyBuildFileModifiedSince(
+                        getProject().getRootProject(),
+                        dependencyGraphLastBuiltTimestamp);
+    }
+
+    private void saveDependencyGraphLastBuiltTimestamp() {
+        dependencyGraphLastBuiltTimestamp = Instant.now();
+    }
+
     private void buildDependencyGraph() {
         dependencyGraph = DependencyGraphBuilder
                 .create()
                 .rootProject(getProject().getRootProject())
                 .build();
+    }
+
+    private void setCurrentRunBuiltTheGraphFlag() {
+        isBuiltInCurrentRun = true;
     }
 
     private void printDependencyGraphDetails() {
@@ -58,6 +88,8 @@ public abstract class LibraryConnectionsSearchTask extends DefaultTask {
                 .isDisplayStatistics(isDisplayStats())
                 .nodeCount(dependencyGraph.getCreationCounter())
                 .connectionCount(dependencyGraph.getConnectionCounter())
+                .lastGraphBuildTimeStamp(dependencyGraphLastBuiltTimestamp)
+                .isDependencyGraphRegeneratedLastTime(isBuiltInCurrentRun)
                 .display();
     }
 

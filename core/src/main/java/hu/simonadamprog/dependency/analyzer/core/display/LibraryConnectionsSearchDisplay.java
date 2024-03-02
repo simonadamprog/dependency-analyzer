@@ -2,6 +2,7 @@ package hu.simonadamprog.dependency.analyzer.core.display;
 
 import org.gradle.api.logging.Logger;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
 
@@ -32,6 +33,10 @@ public class LibraryConnectionsSearchDisplay {
     private int displayListCounter = 1;
 
     private String combinedCircularDependency;
+
+    private Instant lastGraphBuildTimeStamp;
+
+    private boolean isDependencyGraphRegeneratedLastTime;
 
     public static LibraryConnectionsSearchDisplay create() {
         return new LibraryConnectionsSearchDisplay();
@@ -95,13 +100,36 @@ public class LibraryConnectionsSearchDisplay {
         return this;
     }
 
+    public LibraryConnectionsSearchDisplay lastGraphBuildTimeStamp(Instant lastGraphBuildTimeStamp) {
+        this.lastGraphBuildTimeStamp = lastGraphBuildTimeStamp;
+        return this;
+    }
+
+    public LibraryConnectionsSearchDisplay isDependencyGraphRegeneratedLastTime (boolean isDependencyGraphRegeneratedLastTime) {
+        this.isDependencyGraphRegeneratedLastTime = isDependencyGraphRegeneratedLastTime;
+        return this;
+    }
+
     public void display() {
+        displayGraphBuildDetails();
         displayDependencyListInAscendingOrderIfRequired();
         displayStatisticsIfRequired();
         displayCircularDependenciesIfRequiredAndAny();
         displayLibraryId();
         displayExists();
         displayConnectionsIfAnyExist();
+    }
+
+    public void displayGraphBuildDetails() {
+        if (isDependencyGraphRegeneratedLastTime) {
+            log.quiet("Dependency Graph is regenerated in this run. Timestamp: {}", lastGraphBuildTimeStamp);
+        }
+        else {
+            log.quiet("Dependency Graph regeneration is skipped. " +
+                    "(There were no modifications in build.gradle files) " +
+                    "Last dependency graph build timestamp: {}", lastGraphBuildTimeStamp);
+        }
+        displaySeparator();
     }
 
     public void displayDependencyListInAscendingOrderIfRequired() {

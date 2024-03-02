@@ -6,3 +6,6 @@ build
 
 # Ignore idea folder
 .idea
+
+# Ignore Mac specific files
+.DS_Store
