@@ -11,6 +11,8 @@ public class ParameterBuilder {
     public static final String PARAMETER_CIRCULARITY = "circular";
     private static final String PARAMETER_ERROR_MESSAGE = "Parameter \"%s\" is mandatory.";
 
+    private static final String VALUE_ERROR_MESSAGE = "Value for parameter \"%s\" is invalid.";
+
     private Project project;
 
     private String parameterKey;
@@ -18,6 +20,10 @@ public class ParameterBuilder {
     private int length;
 
     private boolean isMandatory;
+
+    private String regularExpression;
+
+    private String value;
 
     public static ParameterBuilder create() {
         return new ParameterBuilder();
@@ -45,25 +51,52 @@ public class ParameterBuilder {
         return this;
     }
 
+    public ParameterBuilder regularExpression(String regularExpression) {
+        this.regularExpression = regularExpression;
+        return this;
+    }
+
     public Parameter build() {
         if (!validateParam()) {
             return Parameter.createNotSetFlag();
         }
-        String value = project.getProperties()
-                .get(parameterKey).toString();
-        return Parameter.create(StringUtils.abbreviate(value, length));
+        getValue();
+        abbreviateValue();
+        validateValue();
+        return Parameter.create(value);
     }
 
     private boolean validateParam() {
         if (!project.getProperties().containsKey(parameterKey)) {
             if (isMandatory) {
-                String message = String.format(PARAMETER_ERROR_MESSAGE, parameterKey);
-                System.out.printf(message);
-                throw new RuntimeException(message);
-            } else {
+                throwException(PARAMETER_ERROR_MESSAGE);
+            }
+            else {
                 return false;
             }
         }
         return true;
+    }
+
+    private void getValue() {
+        value = project.getProperties()
+                .get(parameterKey)
+                .toString();
+    }
+
+    private void abbreviateValue() {
+        value = StringUtils.abbreviate(value, length);
+    }
+
+    private void validateValue() {
+        if (regularExpression != null && !value.matches(regularExpression)) {
+            throwException(VALUE_ERROR_MESSAGE);
+        }
+    }
+
+    private void throwException(String template) {
+        String message = String.format(template, parameterKey);
+        System.out.printf(message);
+        throw new RuntimeException(message);
     }
 }

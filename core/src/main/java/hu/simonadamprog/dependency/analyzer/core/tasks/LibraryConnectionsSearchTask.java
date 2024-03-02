@@ -40,6 +40,7 @@ public abstract class LibraryConnectionsSearchTask extends DefaultTask {
                 .parameterKey(ParameterBuilder.PARAMETER_LIBRARY)
                 .isMandatory(true)
                 .abbreviateToLength(200)
+                .regularExpression("^[a-zA-Z0-9.:\\-]+$")
                 .build()
                 .value();
     }
