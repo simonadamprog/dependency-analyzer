@@ -43,8 +43,8 @@ pluginBundle {
     "direct dependency", "root dependency"]
 }
 
-group 'hu.simonadamprog.dependency.analyzer.core'
-version rootProject.version
+group = rootProject.group + '.core'
+version = rootProject.version
 
 
 // Add a source set for the functional test suite

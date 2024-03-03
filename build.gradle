@@ -1,4 +1,5 @@
 plugins {
+    id 'java'
     id 'hu.simonadamprog.dependency-analyzer' version '1.2.0'
 }
 
@@ -8,5 +9,10 @@ version '1.2.0'
 allprojects {
     repositories {
         mavenCentral()
+    }
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(8)
+        }
     }
 }
