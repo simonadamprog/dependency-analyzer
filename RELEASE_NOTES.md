@@ -11,6 +11,8 @@ Release date: `2024-03-03`
   after the last graph build.
 ### Security:
 - Added regular expression check for the `lib` parameter's value.
+### Support:
+- Emphasizing Java 8 support in Gradle files.
 ### Documentation:
 - Added versioning clarification to [README](README.md#versioning)
 - Added this release notes document.
