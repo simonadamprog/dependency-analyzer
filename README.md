@@ -2,7 +2,7 @@
 
 ---
 
-## Gradle Plugin to analyze dependencies of a project structure.
+## This is a Gradle Plugin to analyze dependency graph of a project structure.
 
 ---
 
@@ -15,6 +15,20 @@
 - Gradle 7.5.1
 - Java 8
 - Java 17
+
+---
+
+### Versioning:
+
+`a.b.c`
+
+`a` :: Major version :: Interface breaking changes
+
+`b` :: Minor version :: Improvements with no interface breaking changes
+
+`c` :: Patch version :: Bugfixes
+
+[See Release Notes](RELEASE_NOTES.md)
 
 ---
 
@@ -32,7 +46,7 @@ containing the transitive dependency - that is used directly by a project.
 
 ---
 
-### <a name="usage"></a>Usage
+### Usage
 
 #### searchLibraryConnections task:
 You must call this gradle task with the `lib` parameter,
@@ -58,7 +72,7 @@ in the root project with the given parameters. (See [Usage](#usage))
 ---
 
 ### Debugging
-For debugging it is the best to start the functional test in debug mode.
+For debugging, start the functional test in debug mode.
 
 ---
 
