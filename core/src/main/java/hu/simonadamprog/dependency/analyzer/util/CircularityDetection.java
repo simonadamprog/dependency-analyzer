@@ -1,4 +1,4 @@
-package hu.simonadamprog.dependency.analyzer.core.util;
+package hu.simonadamprog.dependency.analyzer.util;
 
 import java.util.Iterator;
 import java.util.List;

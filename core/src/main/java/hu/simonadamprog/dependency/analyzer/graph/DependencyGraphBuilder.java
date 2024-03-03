@@ -1,6 +1,6 @@
-package hu.simonadamprog.dependency.analyzer.core.graph;
+package hu.simonadamprog.dependency.analyzer.graph;
 
-import hu.simonadamprog.dependency.analyzer.core.util.CircularityDetection;
+import hu.simonadamprog.dependency.analyzer.util.CircularityDetection;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvedConfiguration;

@@ -1,4 +1,4 @@
-package hu.simonadamprog.dependency.analyzer.core.graph;
+package hu.simonadamprog.dependency.analyzer.graph;
 
 import java.util.HashSet;
 

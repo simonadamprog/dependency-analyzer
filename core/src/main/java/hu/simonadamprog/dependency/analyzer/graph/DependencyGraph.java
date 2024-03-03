@@ -1,6 +1,6 @@
-package hu.simonadamprog.dependency.analyzer.core.graph;
+package hu.simonadamprog.dependency.analyzer.graph;
 
-import hu.simonadamprog.dependency.analyzer.core.display.RootLibraryDetails;
+import hu.simonadamprog.dependency.analyzer.display.RootLibraryDetails;
 
 import java.util.*;
 import java.util.stream.Collectors;

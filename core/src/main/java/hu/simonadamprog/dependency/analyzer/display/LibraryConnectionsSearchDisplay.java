@@ -1,4 +1,4 @@
-package hu.simonadamprog.dependency.analyzer.core.display;
+package hu.simonadamprog.dependency.analyzer.display;
 
 import org.gradle.api.logging.Logger;
 

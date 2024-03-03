@@ -1,11 +1,11 @@
-package hu.simonadamprog.dependency.analyzer.core.tasks;
+package hu.simonadamprog.dependency.analyzer.tasks;
 
-import hu.simonadamprog.dependency.analyzer.core.DependencyAnalyzerPlugin;
-import hu.simonadamprog.dependency.analyzer.core.graph.DependencyGraph;
-import hu.simonadamprog.dependency.analyzer.core.graph.DependencyGraphBuilder;
-import hu.simonadamprog.dependency.analyzer.core.display.LibraryConnectionsSearchDisplay;
-import hu.simonadamprog.dependency.analyzer.core.util.BuildGradleFileUtil;
-import hu.simonadamprog.dependency.analyzer.core.util.ParameterBuilder;
+import hu.simonadamprog.dependency.analyzer.DependencyAnalyzerPlugin;
+import hu.simonadamprog.dependency.analyzer.graph.DependencyGraph;
+import hu.simonadamprog.dependency.analyzer.graph.DependencyGraphBuilder;
+import hu.simonadamprog.dependency.analyzer.display.LibraryConnectionsSearchDisplay;
+import hu.simonadamprog.dependency.analyzer.util.BuildGradleFileUtil;
+import hu.simonadamprog.dependency.analyzer.util.ParameterBuilder;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.tasks.TaskAction;
 

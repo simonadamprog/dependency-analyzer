@@ -5,14 +5,15 @@ pluginManagement {
     }
 }
 
-rootProject.name = 'dependency-analyzer'
-
 include 'core',
         'test-app',
         'test-app:subsubproject',
         'test-library',
         'circular-test-left',
         'circular-test-right'
+
+rootProject.name = 'dependency-analyzer-project'
+project(':core').name = 'dependency-analyzer'
 
 dependencyResolutionManagement {
     versionCatalogs {

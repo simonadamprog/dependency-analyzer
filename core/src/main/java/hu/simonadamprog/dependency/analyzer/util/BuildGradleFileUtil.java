@@ -1,4 +1,4 @@
-package hu.simonadamprog.dependency.analyzer.core.util;
+package hu.simonadamprog.dependency.analyzer.util;
 
 import org.gradle.api.Project;
 

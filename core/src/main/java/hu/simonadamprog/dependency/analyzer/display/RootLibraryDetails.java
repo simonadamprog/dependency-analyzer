@@ -1,4 +1,4 @@
-package hu.simonadamprog.dependency.analyzer.core.display;
+package hu.simonadamprog.dependency.analyzer.display;
 
 import java.util.List;
 

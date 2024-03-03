@@ -24,7 +24,7 @@ gradlePlugin {
     plugins {
         create('dependencyAnalyzer') {
             id = 'hu.simonadamprog.dependency-analyzer'
-            implementationClass = 'hu.simonadamprog.dependency.analyzer.core.DependencyAnalyzerPlugin'
+            implementationClass = 'hu.simonadamprog.dependency.analyzer.DependencyAnalyzerPlugin'
             displayName = 'Dependency Analyzer Gradle Plugin'
         }
     }
@@ -43,7 +43,7 @@ pluginBundle {
     "direct dependency", "root dependency"]
 }
 
-group = rootProject.group + '.core'
+group = rootProject.group
 version = rootProject.version
 
 
