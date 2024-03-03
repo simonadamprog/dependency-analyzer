@@ -122,11 +122,11 @@ public class LibraryConnectionsSearchDisplay {
 
     public void displayGraphBuildDetails() {
         if (isDependencyGraphRegeneratedLastTime) {
-            log.quiet("Dependency Graph is regenerated in this run. Timestamp: {}", lastGraphBuildTimeStamp);
+            log.quiet("Dependency Graph was regenerated in this run. Timestamp: {}", lastGraphBuildTimeStamp);
         }
         else {
-            log.quiet("Dependency Graph regeneration is skipped. " +
-                    "(There were no modifications in build.gradle files) " +
+            log.quiet("Dependency Graph regeneration was skipped. " +
+                    "(There were no modifications in build.gradle files.)\n" +
                     "Last dependency graph build timestamp: {}", lastGraphBuildTimeStamp);
         }
         displaySeparator();
