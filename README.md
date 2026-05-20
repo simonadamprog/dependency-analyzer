@@ -6,6 +6,11 @@
 
 ---
 
+### Please review the official webpage for this project if you haven't done already:
+[Official Webpage](https://simonadamprog.hu/dependency-analyzer/)
+
+---
+
 ### To add this plugin to your project:
 [Visit Gradle Plugin Portal](https://plugins.gradle.org/plugin/hu.simonadamprog.dependency-analyzer)
 
